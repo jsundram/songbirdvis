@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet href="chrome://global/skin" type="text/css"?>
+<?xml-stylesheet href="chrome://songbird/skin/songbird.css" type="text/css"?>
+<?xml-stylesheet href="chrome://songbird/content/bindings/bindings.css" type="text/css"?>
+
+<?xml-stylesheet href="chrome://visualizerfm/skin/media-page.css" type="text/css"?>
+
+<!DOCTYPE page SYSTEM "chrome://songbird/locale/songbird.dtd" >
+
+<!-- Import the standard scripts and overlays for all media pages.
+     Required for the playlist and other widgets to function correctly. -->
+<?xul-overlay href="chrome://songbird/content/xul/mediaPageOverlay.xul"?>
+
+
+<!--
+ 
+  Visualizer.fm Media Page 
+  
+  A custom viewer for sbIMediaListViews.  Shows a media list as a plain 
+  table using the sb-playlist XBL widget.
+
+  This page is registered with sbIMediaPageManager and loaded by the
+  sbTabBrowser widget.
+  
+  For more information see http://wiki.songbirdnest.com/Developer/Developer_Intro/Extensions
+  
+  -->
+<page
+  id="visualizerfm-media-page"
+  xmlns:html="http://www.w3.org/1999/xhtml"
+  xmlns:rdf="http://www.w3.org/TR/WD-rdf-syntax#"
+  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  onload="window.mediaPage.onLoad();"
+  onunload="window.mediaPage.onUnload();"
+  windowtype="Songbird:MediaPage"
+>
+
+ 
+  <!-- Page Controller.
+       Registers a window.mediaPage object implementing the 
+       sbIMediaPage interface.
+    -->
+  <script type="application/x-javascript" src="analysis.js"/>
+  <script type="text/javascript" src="processingjs/processing-0.8.js"/>
+  <script type="application/x-javascript" src="media-page.js" />
+  
+  <vbox id="visualizer" flex="1">
+    <vbox id="canvas-box" align="left" pack="center">
+      <html:div><html:canvas id="visualizer_canvas"/></html:div>
+    </vbox>
+  </vbox>
+  
+
+</page>

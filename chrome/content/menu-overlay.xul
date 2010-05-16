@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://visualizerfm/skin/overlay.css" type="text/css"?>
+<!DOCTYPE overlay SYSTEM "chrome://visualizerfm/locale/overlay.dtd">
+<overlay id="visualizerfm-menu-overlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  
+  <!-- Target the tools menu -->
+  <menupopup id="menu_ToolsPopup"> 
+
+    <!-- Add a menu item -->
+    <menuitem id="visualizerfm-helloworld-menuitem"
+            label="&visualizerfm.helloworld.label;" 
+            accesskey="&visualizerfm.helloworld.accesskey;" 
+            insertafter="devToolsSeparator"
+            command="visualizerfm-helloworld-cmd" />   
+     
+  </menupopup>
+
+</overlay>

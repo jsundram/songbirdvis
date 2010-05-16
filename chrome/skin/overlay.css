@@ -1,0 +1,7 @@
+
+/** Make the menu item red so that it stands out **/
+#visualizerfm-helloworld-menuitem
+{
+  color: red ! important;
+}
+

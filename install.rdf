@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#"
+     xmlns:songbird="http://www.songbirdnest.com/2007/addon-metadata-rdf#">
+  <Description about="urn:mozilla:install-manifest">
+    <em:id>{02ea3e21-bcab-c447-9cb1-c867fc907c98}</em:id>
+    <em:type>2</em:type>
+    <em:name>Visualizer.fm</em:name>
+    <em:version>1.0.0.0</em:version>
+    <em:creator>Jaso Sundram</em:creator>
+
+
+    <em:description>visualizer with echonest data</em:description>
+
+
+
+
+
+    <em:optionsURL>chrome://visualizerfm/content/options.xul</em:optionsURL>
+
+
+
+    <em:targetApplication>
+      <Description>
+        <em:id>songbird@songbirdnest.com</em:id>
+        <em:minVersion>1.4.1b1</em:minVersion>
+        <em:maxVersion>1.4.*</em:maxVersion>
+      </Description>
+    </em:targetApplication>
+
+
+
+
+
+
+
+    <!-- Register a custom media page.
+         See http://wiki.songbirdnest.com/Developer/Articles/Getting_Started/Building_Media_Views -->
+    <songbird:mediaPage>
+      <Description>
+        <songbird:contentTitle>Visualizer.fm</songbird:contentTitle>
+        <songbird:contentUrl>chrome://visualizerfm/content/media-page.xul</songbird:contentUrl>
+      </Description>
+    </songbird:mediaPage>
+
+  </Description>
+</RDF>
