@@ -243,7 +243,7 @@ function TrackInfo(t) {
     this.timbreMean = [0,0,0,0,0,0,0,0,0,0,0,0];
     for (i = 0; i < this.segments.length; i++) 
     {
-        s = this.segments[i];
+        var s = this.segments[i];
         for (var j = 0; j < 12; j++)
         {
             var tim = s.timbre[j];
