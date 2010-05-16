@@ -271,7 +271,7 @@ DiagnosticVis.Controller = {
         
         var frac = (timestamp - this.TRACK_START) / (this.TRACK_END - this.TRACK_START);
         
-        float x = r.left + frac * r.width;
+        var x = r.left + frac * r.width;
         if (x != this.old_scrub)
         {
             this.old_scrub = x;
@@ -294,8 +294,8 @@ DiagnosticVis.Controller = {
     {
         p.pushStyle();
         var curr = r.left;
-        float w = 0;
-        int h = r.height / 12;
+        var w = 0;
+        var h = r.height / 12;
         
         for (var i = 0; i < t.segments.length; i++)
         {
@@ -324,8 +324,8 @@ DiagnosticVis.Controller = {
     {
         p.pushStyle();
         var curr = r.left;
-        float w = 0;
-        int h = r.height / 12;
+        var w = 0;
+        var h = r.height / 12;
         
         for (var i = 0; i < t.segments.length; i++)
         {
