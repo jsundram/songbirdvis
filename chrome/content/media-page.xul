@@ -42,7 +42,7 @@
        sbIMediaPage interface.
     -->
   <script type="application/x-javascript" src="analysis.js"/>
-  <script type="text/javascript" src="processingjs/processing-0.8.js"/>
+  <script type="text/javascript" src="processing-0.8.js"/>
   <script type="application/x-javascript" src="media-page.js" />
   
   <vbox id="visualizer" flex="1">

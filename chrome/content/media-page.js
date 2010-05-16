@@ -30,7 +30,8 @@ window.mediaPage = {
   _mediaListView: null,
   
   analysis: null,
-    
+  
+  sketch: null,
   
   /** 
    * Gets the sbIMediaListView that this page is displaying
@@ -53,6 +54,7 @@ window.mediaPage = {
     {
         var track = self.JSON.decode(response);
         self.analysis = new TrackInfo(track);
+        self.setupProcessing(self.sketch.canvas);
     });
     
   },
@@ -62,16 +64,15 @@ window.mediaPage = {
    * Called in the capturing phase of window load by the Songbird browser.
    * Note that to simplify page creation mediaListView may only be set once.
    */
-  set mediaListView(value)  {
-    
-    if (!this._mediaListView) {
-      this._mediaListView = value;
-    } else {
-      throw new Error("mediaListView may only be set once.  Please reload the page");
-    }
+  set mediaListView(value)
+  {
+    if (!this._mediaListView)
+        this._mediaListView = value;
+    else
+        throw new Error("mediaListView may only be set once.  Please reload the page");
   },
     
-  get_md5: function(file) 
+  get_md5: function(file)
   {
       var fiStream = Cc["@mozilla.org/network/file-input-stream;1"].createInstance(Ci.nsIFileInputStream);
       fiStream.init(file, 0x01, 0666, 0); // fuck yeah
@@ -99,14 +100,14 @@ window.mediaPage = {
       req.open('GET',url,true);
       req.onreadystatechange = function(e) 
       {
-          if (req.readyState == 4) 
+          if (req.readyState == 4)
           {
               if (req.status == 200)
                   callback(req.responseText);
               else
                 Cu.reportError("api xmlhttprequest error");
-          }   
-      };  
+          }
+      };
       req.send(null);
   },
   
@@ -116,23 +117,22 @@ window.mediaPage = {
       title = title.replace(/ /g, '%20'); // URL ENCODE FTW
       
       // Skip md5 for now; it takes time, and we can't do a proper lookup.
-    
-    var url = "http://beta.developer.echonest.com/api/v4/song/search?api_key=HSHR3EZROVIQJYY43&format=json" +
-    "&results=1&artist=" + artist + "&title=" + title +
-    "&bucket=tracks&bucket=audio_summary&bucket=id:paulify&bucket=id:playme";
-    
-     var self = this;
-     this.callAPI(url, function(response) { self.handleSearchResponse(response);});
-    
-
+      
+      var url = "http://beta.developer.echonest.com/api/v4/song/search?api_key=HSHR3EZROVIQJYY43&format=json" +
+      "&results=1&artist=" + artist + "&title=" + title +
+      "&bucket=tracks&bucket=audio_summary&bucket=id:paulify&bucket=id:playme";
+      
+      var self = this;
+      this.callAPI(url, function(response) { self.handleSearchResponse(response);});
   },
+  
   /** 
    * Called when the page finishes loading.  
    * By this time window.mediaPage.mediaListView should have 
-   * been externally set.  
+   * been externally set.
    */
-  onLoad: function(e) {
-    
+  onLoad: function(e)
+  {
     // Make sure we have the javascript modules we're going to use
     if (!window.SBProperties) 
       Cu.import("resource://app/jsmodules/sbProperties.jsm");
@@ -145,11 +145,14 @@ window.mediaPage = {
     {
         Components.utils.reportError("Media Page did not receive a mediaListView before the onload event!");
         return;
-    } 
-        
-    //
-    // TODO: Do something interesting here!
-    //
+    }
+    
+    // Set up canvas:
+    this.sketch = {};
+    this.sketch.canvas = document.getElementById("visualizer_canvas");
+    var mybox = document.getElementById("visualizerfm-media-page");
+    this.sketch.width = parseInt(mybox.boxObject.width);
+    this.sketch.height = parseInt(mybox.boxObject.height);
     
     // Listen to changes in the position dataremote.
     var alertCount = 0;
@@ -159,7 +162,7 @@ window.mediaPage = {
       {
           if (self.analysis)
           {
-              // have position in ms, update processing?
+              // TODO: have position in ms, update processing?
           }
           // else nothing to be done. Paint a picture of an hourglass?
       }
@@ -169,15 +172,11 @@ window.mediaPage = {
     positionRemote.init("metadata.position");
     positionRemote.bindObserver(positionObserver, true);
     
-        
     var selection = this._mediaListView.selection;
     var seedTrack = selection.currentMediaItem; // sbiMediaItem
     if (!seedTrack || selection.count == 0) 
-    {
-        alert("One track at a time, please");
-    }
-    
-    //var path = seedTrack.contentSrc.path;
+        alert("Please select one (and only one) track.");
+        
     var spec = seedTrack.getProperty(SBProperties.contentURL);
     var ios = Cc["@mozilla.org/network/io-service;1"].getService(Ci.nsIIOService);
     var filehandler = ios.getProtocolHandler("file").QueryInterface(Ci.nsIFileProtocolHandler);
@@ -187,56 +186,36 @@ window.mediaPage = {
     var artist = seedTrack.getProperty(SBProperties.artistName)
     var track = seedTrack.getProperty(SBProperties.trackName)
     
-    var analysis = this.getAnalysis(md5, artist, track);
+    this.getAnalysis(md5, artist, track);
     
     // Get playlist commands (context menu, keyboard shortcuts, toolbar)
     // Note: playlist commands currently depend on the playlist widget.
-    var mgr =
-      Components.classes["@songbirdnest.com/Songbird/PlaylistCommandsManager;1"]
-                .createInstance(Components.interfaces.sbIPlaylistCommandsManager);
+    var mgr = Cc["@songbirdnest.com/Songbird/PlaylistCommandsManager;1"].createInstance(Ci.sbIPlaylistCommandsManager);
     var cmds = mgr.request(kPlaylistCommands.MEDIAITEM_DEFAULT);
-    
-  },
-    
-    
-  /** 
-   * Called as the window is about to unload
-   */
-  onUnload:  function(e) {
-  },
-    
-  
-  /** 
-   * Show/highlight the MediaItem at the given MediaListView index.
-   * Called by the Find Current Track button.
-   */
-  highlightItem: function(aIndex) {
-  },
-    
-  
-  /** 
-   * Called when something is dragged over the tabbrowser tab for this window
-   */
-  canDrop: function(aEvent, aSession) {
-
-  },
-    
-  
-  /** 
-   * Called when something is dropped on the tabbrowser tab for this window
-   */
-  onDrop: function(aEvent, aSession) {
   },
   
   setupProcessing: function(canvas){
-      var p = Processing(canvas);
+      var p = Processing(canvas, ""); // TODO: load sketch and pass it in here?
       p.setup         = function() { self.setup(p); };
       p.draw          = function() { self.draw(p); };
       p.mousePressed  = function() { self.mousePressed(p); };
       p.mouseReleased = function() { self.mouseReleased(p); };
       p.mouseDragged  = function() { self.mouseDragged(p); };
-      p.init();    
+      p.init();
   },
+  
+  // Called as the window is about to unload
+  onUnload:  function(e) {},
+  
+  // Show/highlight the MediaItem at the given MediaListView index. Called by the Find Current Track button.
+  highlightItem: function(aIndex) {},
+  
+  // Called when something is dragged over the tabbrowser tab for this window
+  canDrop: function(aEvent, aSession) {},
+  
+  // Called when something is dropped on the tabbrowser tab for this window
+  onDrop: function(aEvent, aSession) {},
+  
 } // End window.mediaPage 
 
 
