@@ -26,6 +26,9 @@ Special Features:
 </p>
 END_DOCSTRING*/
 
+var BG = 0;
+var FG = 255;
+
 if (typeof(Cc) == 'undefined')
   var Cc = Components.classes;
 if (typeof(Ci) == 'undefined')
@@ -92,7 +95,7 @@ DiagnosticVis.Controller = {
         this.curr_height = parseInt(sketchInfo.height);
         this.TRACK = sketchInfo.analysis;
         this.p.size(this.curr_width, this.curr_height);
-        this.p.background(0);
+        this.p.background(BG);
         // frameRate. default is 60. If the average track is 120bpm, that's 2 bps, 
         // so this is good for a segment rate of up to 15 segments/beat.
         this.p.frameRate(30);
@@ -205,7 +208,7 @@ DiagnosticVis.Controller = {
             }
             catch(e)
             {
-                p.background(0); 
+                p.background(BG); 
             }
         }
         
@@ -226,7 +229,7 @@ DiagnosticVis.Controller = {
             dump("225\n");
             if (track_changed || this.resized)
             {
-                p.background(0);
+                p.background(BG);
                 
                 //this.drawTrackLevel(p, this.TRACK, meta);
                 
@@ -403,7 +406,7 @@ DiagnosticVis.Controller = {
     drawMeter : function(p, t, r)
     {
         if (true)
-            this.plot(p, t.tatums, r, this.TRACK_START, this.TRACK_END, p.color(255));
+            this.plot(p, t.tatums, r, this.TRACK_START, this.TRACK_END, p.color(FG));
         if (true)
             this.plot(p, t.beats, r, this.TRACK_START, this.TRACK_END, p.color(255, 0, 0));
         if (t.meter != 1) // if track.meter == 1, bars == beats.
@@ -493,7 +496,7 @@ DiagnosticVis.Controller = {
         p.line(fin, r.bottom(), fin, loud);   // fadein
         p.line(fout, r.bottom(), fout, loud); // fadeou
         
-        p.fill(255);
+        p.fill(FG);
         
         p.textFont("Arial", 12);
         p.text("loudness = " + p.nf(t.overall_loudness, 2, 1) + "dB", r.left + 10, loud - 10);
