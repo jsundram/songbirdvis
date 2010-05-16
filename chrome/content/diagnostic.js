@@ -82,6 +82,7 @@ DiagnosticVis.Controller = {
         var self = this;
         p.setup         = function() { self.setup(sketchInfo); };
         p.draw          = function() { self.draw(p); };
+        p.mouseClicked  = function() { self.mouseClicked(p); };
         p.mousePressed  = function() { self.mousePressed(p); };
         p.mouseReleased = function() { self.mouseReleased(p); };
         p.mouseDragged  = function() { self.mouseDragged(p); };
@@ -160,6 +161,7 @@ DiagnosticVis.Controller = {
     
     mouseReleased : function()
     {
+        alert("done dragging" + this.DRAGGED);
         if (this.DRAGGED)
         {
             // console.log('Dragged from', startX, startY, ' to ', mouseX, mouseY);
@@ -181,14 +183,15 @@ DiagnosticVis.Controller = {
         this.startY = null;
     },
     
-    mouseClicked : function()
+    mouseClicked : function(p)
     {
-        // console.log('Click', mouseX, mouseY);
         if (this.TRACK)
         {
             // Since we're drawing from L to R with no border, math is simple.
             var seek = this.offset_to_seconds(this.p.mouseX) * 1000;
-            // TODO: Figure out how to seek
+            
+            var gMM = Cc["@songbirdnest.com/Songbird/Mediacore/Manager;1"].getService(Ci.sbIMediacoreManager);
+            gMM.playbackControl.position = seek;
         }
     },
     
