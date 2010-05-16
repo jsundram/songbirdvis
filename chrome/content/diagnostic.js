@@ -229,7 +229,6 @@ DiagnosticVis.Controller = {
             var scrubber_height = 10;
             var meta = new Rect(0, 0, p.width, scrubber_height);
             var scrubber = new Rect(0, meta.bottom(), p.width, scrubber_height);
-            dump("225\n");
             if (track_changed || this.resized)
             {
                 p.background(BG);
@@ -243,7 +242,6 @@ DiagnosticVis.Controller = {
                 this.drawTimbre(p, this.TRACK, timbre);
                 
                 var pitch = new Rect(0, timbre.bottom() + scrubber_height, p.width, h);
-                dump("240\n");
                 this.drawPitch(p, this.TRACK, pitch);
                 
                 var loudness = new Rect(0, pitch.bottom(), p.width, h);
@@ -255,7 +253,7 @@ DiagnosticVis.Controller = {
                 this.all = p.get();
             }
             
-            //this.drawScrubber(p, this.TRACK, scrubber);
+            this.drawScrubber(p, this.TRACK, scrubber);
         }
         
         this.resized = false; // after we've made it through a draw loop, we've resized.
@@ -277,9 +275,6 @@ DiagnosticVis.Controller = {
         p.pushStyle();
         
         var timestamp = this.timestamp;
-        dump("timestamp: " + timestamp + "\n");
-        dump("start: " + this.TRACK_START + "\n");
-        dump("end: " + this.TRACK_END + "\n");
         if (timestamp < this.TRACK_START || this.TRACK_END < timestamp)
         {
             r.draw(p, 0, 255); // blank us out
@@ -293,7 +288,7 @@ DiagnosticVis.Controller = {
         {
             this.old_scrub = x;
             
-            //p.image(this.all, 0, 0);
+            p.image(this.all, 0, 0);
             this.drawDragRect(false);
             
             p.fill(204, 102, 0, 95);
@@ -353,7 +348,6 @@ DiagnosticVis.Controller = {
             
             var pmin = p.min(current.pitches);
             var pwidth = p.min(current.pitches) - pmin;
-            dump("pmin: " + pmin + ", pwidth: " + pwidth + "\n");
             if (pwidth < .001)
                 pwidth = .1; // avoid dividing by 0
             

@@ -3607,7 +3607,9 @@
             return to.appendChild(elem);
           },
           createElement = function(localName) {
-            return doc.createElement(localName);
+            
+            return doc.createElementNS("http://www.w3.org/1999/xhtml", localName);
+            //return doc.createElement(localName);
           },
           createTextNode = function(text) {
             return doc.createTextNode(text);
@@ -5710,9 +5712,8 @@
     };
 
     //var Temporary2DContext = document.createElement('canvas').getContext('2d');
-    var httpNS = "http://www.w3.org/1999/xhtml"
     var cvs =
-     document.createElementNS(httpNS, 'canvas').getContext('2d');
+     document.createElementNS("http://www.w3.org/1999/xhtml", 'canvas').getContext('2d');
     dump(cvs);
     var Temporary2DContext = cvs; 
 
@@ -5757,12 +5758,14 @@
           }
           // put 'this' into a new canvas
           var pimg = this.toImageData();
-          var canvas = document.createElement('canvas');
+          //var canvas = document.createElement('canvas');
+          var canvas = document.createElementNS("http://www.w3.org/1999/xhtml", 'canvas');
           canvas.width = this.width;
           canvas.height = this.height;
           canvas.getContext('2d').putImageData(pimg, 0, 0);
           // pass new canvas to drawimage with w,h
-          var canvasResized = document.createElement('canvas');
+          //var canvasResized = document.createElement('canvas');
+          var canvas = document.createElementNS("http://www.w3.org/1999/xhtml", 'canvas');
           canvasResized.width = w;
           canvasResized.height = h;
           canvasResized.getContext('2d').drawImage(canvas, 0, 0, w, h);
@@ -5827,7 +5830,8 @@
       };
 
       this.toDataURL = function() {
-        var canvas = document.createElement('canvas');
+        //var canvas = document.createElement('canvas');
+        var canvas = document.createElementNS("http://www.w3.org/1999/xhtml", 'canvas');
         canvas.height = this.height;
         canvas.width = this.width;
         var ctx = canvas.getContext('2d');
@@ -5862,7 +5866,8 @@
 
       this.fromHTMLImageData = function(htmlImg) {
         // convert an <img> to a PImage
-        var canvas = document.createElement("canvas");
+        // var canvas = document.createElement("canvas");
+        var canvas = document.createElementNS("http://www.w3.org/1999/xhtml", 'canvas');
         canvas.width = htmlImg.width;
         canvas.height = htmlImg.height;
         var context = canvas.getContext("2d");
@@ -5927,7 +5932,8 @@
       // else aysnc load it
       else {
         var pimg = new PImage(0, 0, p.ARGB);
-        var img = document.createElement('img');
+        //var img = document.createElement('img');
+        var img = document.createElementNS("http://www.w3.org/1999/xhtml", 'img');
 
         pimg.sourceImg = img;
 
@@ -6003,7 +6009,8 @@
 
     // Creates a new Processing instance and passes it back for... processing
     p.createGraphics = function createGraphics(w, h) {
-      var canvas = document.createElement("canvas");
+      //var canvas = document.createElement("canvas");
+        var canvas = document.createElementNS("http://www.w3.org/1999/xhtml", 'canvas');
       var ret = Processing.build(canvas);
       ret.size(w, h);
       ret.canvas = canvas;
@@ -6131,7 +6138,8 @@
         img.data[pos + 3] = parseFloat(c[3]) * 100;
       }
 
-      var canvas = document.createElement("canvas");
+      //var canvas = document.createElement("canvas");
+        var canvas = document.createElementNS("http://www.w3.org/1999/xhtml", 'canvas');
       canvas.width = img.width;
       canvas.height = img.height;
 
@@ -6169,7 +6177,8 @@
         //curContext.putImageData(obj, x, y); // this causes error if data overflows the canvas dimensions
         curTint(obj);
 
-        var c = document.createElement('canvas');
+        //var c = document.createElement('canvas');
+        var canvas = document.createElementNS("http://www.w3.org/1999/xhtml", 'canvas');
         c.width = obj.width;
         c.height = obj.height;
         var ctx = c.getContext('2d');
@@ -6769,7 +6778,8 @@
           if (!curTextFont.glyph) {
             if (str && (curContext.fillText || curContext.mozDrawText)) {
               curContext.save();
-              curContext.font = curContext.mozTextStyle = curTextSize + "px " + curTextFont.name;
+              dump("ctf: " + curTextFont + "\n");
+              curContext.font = curContext.mozTextStyle = curTextSize + "px " + curTextFont;
 
               if (curContext.fillText) {
                 curContext.fillText(str, x, y);
