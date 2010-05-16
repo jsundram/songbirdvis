@@ -110,6 +110,7 @@ Event.prototype = {
 
             var maxVal = -1.0;
             var major_triad = true;
+            var maxIndex = 0;
             // Let's estimate the chord and fill the triadMatrix
             for (j = 0; j < 12; j++) {
                 minor = s.pitches[j] + s.pitches[ (j+3) % 12] + s.pitches[ (j+7) % 12]; // minor triad
@@ -152,7 +153,7 @@ Event.prototype = {
                                 minTriads[(i+11) % 12];
         }
 
-        majorKey = 0;
+        var majorKey = 0;
         for (c = 0; c < scale_profile.length; c++) {
             if (scale_profile[majorKey] < scale_profile[c]) {
                 majorKey = c;
