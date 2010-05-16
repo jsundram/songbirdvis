@@ -54,8 +54,8 @@ window.mediaPage = {
     {
         var track = self.JSON.decode(response);
         self.analysis = new TrackInfo(track);
-        // TODO: Call setupProcessing on sketch
-        //self.setupProcessing(self.sketch.canvas);
+        var visController = DiagnosticVis.Controller;
+        visController.setupProcessing(self.sketch);
     });
     
   },
