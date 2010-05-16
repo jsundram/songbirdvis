@@ -75,7 +75,7 @@ DiagnosticVis.Controller = {
         this.p = Processing(sketchInfo.canvas, "");
         var p = this.p; //brevity
         var self = this;
-        p.setup         = function() { self.setup(sketchInfo.width, sketchInfo.height); };
+        p.setup         = function() { self.setup(sketchInfo); };
         p.draw          = function() { self.draw(p); };
         p.mousePressed  = function() { self.mousePressed(p); };
         p.mouseReleased = function() { self.mouseReleased(p); };
@@ -84,11 +84,12 @@ DiagnosticVis.Controller = {
         p.init();
     },
     
-    setup : function(width, height)
+    setup : function(sketchInfo)
     {
-        this.curr_width = width;
-        this.curr_height = height;
-        this.p.size(width, height);
+        this.curr_width = parseInt(sketchInfo.width);
+        this.curr_height = parseInt(sketchInfo.height);
+        this.TRACK = sketchInfo.analysis;
+        this.p.size(this.curr_width, this.curr_height);
         this.p.background(0);
         // frameRate. default is 60. If the average track is 120bpm, that's 2 bps, 
         // so this is good for a segment rate of up to 15 segments/beat.
@@ -209,7 +210,7 @@ DiagnosticVis.Controller = {
         var current_track = this.TRACK;
         if (current_track)
         {
-            var track_changed = (TRACK != current_track);
+            var track_changed = (this.TRACK != current_track);
             if (track_changed)
             {
                 this.TRACK = current_track;

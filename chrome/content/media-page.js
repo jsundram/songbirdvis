@@ -171,6 +171,7 @@ window.mediaPage = {
    */
   setupProcessing: function(track) {
       this.analysis = new TrackInfo(track);
+      this.sketch.analysis = this.analysis;
       this.visController = DiagnosticVis.Controller;
       this.visController.setupProcessing(this.sketch);
   },
