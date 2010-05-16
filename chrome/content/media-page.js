@@ -53,9 +53,7 @@ window.mediaPage = {
     this.callAPI(analysis_url, function(response)
     {
         var track = self.JSON.decode(response);
-        self.analysis = new TrackInfo(track);
-        var visController = DiagnosticVis.Controller;
-        visController.setupProcessing(self.sketch);
+        self.setupProcessing(track);
     });
     
   },
@@ -117,12 +115,35 @@ window.mediaPage = {
       req.send(null);
   },
   
-  getAnalysis: function(md5, artist, title)
+  getAnalysis: function(md5, artist, title, contentURL)
   {
       artist = encodeURIComponent(artist);
       title = encodeURIComponent(title);
       
       // Skip md5 for now; it takes time, and we can't do a proper lookup.
+      var file = this.getLocalAnalysis(contentURL);
+      if (file) {
+        dump("analysis results exist locally\n");
+        // load the json
+        var fiStream = Cc["@mozilla.org/network/file-input-stream;1"]
+                         .createInstance(Ci.nsIFileInputStream);
+        fiStream.init(file, 0x01, 0, 0);
+        var fiStreamScriptable = Cc["@mozilla.org/scriptableinputstream;1"]
+                                   .createInstance(Ci.nsIScriptableInputStream);
+        fiStreamScriptable.init(fiStream);
+        var len = fiStreamScriptable.available();
+
+
+        var filestring = fiStreamScriptable.read(len);
+        dump(filestring);
+        fiStreamScriptable.close();
+        fiStream.close();
+
+        // convert to JSON
+        var track = this.JSON.decode(filestring); 
+        this.setupProcessing(track); 
+        return;
+      }
       
       var url = "http://beta.developer.echonest.com/api/v4/song/search?api_key=HSHR3EZROVIQJYY43&format=json" +
       "&results=1&artist=" + artist + "&title=" + title +
@@ -131,7 +152,29 @@ window.mediaPage = {
       var self = this;
       this.callAPI(url, function(response) { self.handleSearchResponse(response);});
   },
-  
+
+  /**
+   * Check chrome://songbirdvis/content/data for a local json file. Return the
+   * file object if it exists, otherwise return null.
+   */
+  getLocalAnalysis: function(contentURL) {
+      
+      dump("checking to see if " + contentURL + " json exists\n");
+      var ios = Cc["@mozilla.org/network/io-service;1"].getService(Ci.nsIIOService);
+      var filehandler = ios.getProtocolHandler("file").QueryInterface(Ci.nsIFileProtocolHandler);
+      var file = filehandler.getFileFromURLSpec(contentURL + ".json");
+      return file;
+  },
+
+  /**
+   * Setup the Processing script
+   */
+  setupProcessing: function(track) {
+      self.analysis = new TrackInfo(track);
+      var visController = DiagnosticVis.Controller;
+      visController.setupProcessing(self.sketch);
+  },
+
   /** 
    * Called when the page finishes loading.  
    * By this time window.mediaPage.mediaListView should have 
@@ -192,7 +235,7 @@ window.mediaPage = {
     var artist = seedTrack.getProperty(SBProperties.artistName)
     var track = seedTrack.getProperty(SBProperties.trackName)
     
-    this.getAnalysis(md5, artist, track);
+    this.getAnalysis(md5, artist, track, spec);
     
     // Get playlist commands (context menu, keyboard shortcuts, toolbar)
     // Note: playlist commands currently depend on the playlist widget.
