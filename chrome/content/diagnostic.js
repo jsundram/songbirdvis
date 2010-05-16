@@ -72,6 +72,7 @@ DiagnosticVis.Controller = {
     setupProcessing: function(sketchInfo)
     {
         this.p = Processing(sketchInfo.canvas, "");
+        var p = this.p; //brevity
         var self = this;
         p.setup         = function() { self.setup(sketchInfo.width, sketchInfo.height); };
         p.draw          = function() { self.draw(p); };
