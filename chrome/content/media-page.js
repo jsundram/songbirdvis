@@ -170,9 +170,9 @@ window.mediaPage = {
    * Setup the Processing script
    */
   setupProcessing: function(track) {
-      self.analysis = new TrackInfo(track);
+      this.analysis = new TrackInfo(track);
       var visController = DiagnosticVis.Controller;
-      visController.setupProcessing(self.sketch);
+      visController.setupProcessing(this.sketch);
   },
 
   /** 
