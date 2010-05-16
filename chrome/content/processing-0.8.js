@@ -5709,7 +5709,12 @@
       return data;
     };
 
-    var Temporary2DContext = document.createElement('canvas').getContext('2d');
+    //var Temporary2DContext = document.createElement('canvas').getContext('2d');
+    var httpNS = "http://www.w3.org/1999/xhtml"
+    var cvs =
+     document.createElementNS(httpNS, 'canvas').getContext('2d');
+    dump(cvs);
+    var Temporary2DContext = cvs; 
 
     var PImage = function PImage(aWidth, aHeight, aFormat) {
       this.get = function(x, y, w, h) {
