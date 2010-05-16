@@ -171,8 +171,8 @@ window.mediaPage = {
    */
   setupProcessing: function(track) {
       this.analysis = new TrackInfo(track);
-      var visController = DiagnosticVis.Controller;
-      visController.setupProcessing(this.sketch);
+      this.visController = DiagnosticVis.Controller;
+      this.visController.setupProcessing(this.sketch);
   },
 
   /** 
@@ -209,11 +209,11 @@ window.mediaPage = {
     var positionObserver = {
       observe : function(subject, topic, position)
       {
-          if (self.analysis)
+          if (self.analysis && self.visController)
           {
               // TODO: have position in ms, update processing?
-              var visController = DiagnosticVis.Controller;
-              visController.timestamp = position;
+              self.visController.timestamp = position;
+              dump("updated position with: " + position + "\n"); 
           }
           // else nothing to be done. Paint a picture of an hourglass?
       }
@@ -222,6 +222,7 @@ window.mediaPage = {
     var positionRemote = Cc["@songbirdnest.com/Songbird/DataRemote;1"].createInstance(Ci.sbIDataRemote);
     positionRemote.init("metadata.position");
     positionRemote.bindObserver(positionObserver, true);
+    this.positionRemote = positionRemote;
     
     var selection = this._mediaListView.selection;
     var seedTrack = selection.currentMediaItem; // sbiMediaItem
@@ -248,7 +249,9 @@ window.mediaPage = {
 
   
   // Called as the window is about to unload
-  onUnload:  function(e) {},
+  onUnload:  function(e) {
+    this.positionRemote.unbind();
+  },
   
   // Show/highlight the MediaItem at the given MediaListView index. Called by the Find Current Track button.
   highlightItem: function(aIndex) {},
