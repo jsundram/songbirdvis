@@ -86,6 +86,8 @@ DiagnosticVis.Controller = {
     
     setup : function(width, height)
     {
+        this.curr_width = width;
+        this.curr_height = height;
         this.p.size(width, height);
         this.p.background(0);
         // frameRate. default is 60. If the average track is 120bpm, that's 2 bps, 
