@@ -86,7 +86,7 @@ DiagnosticVis.Controller = {
         p.mousePressed  = function() { self.mousePressed(p); };
         p.mouseReleased = function() { self.mouseReleased(p); };
         p.mouseDragged  = function() { self.mouseDragged(p); };
-        p.keyPressed = function()    { self.keyPressed(p.key); };
+        p.keyPressed = function()    { dump('hi');self.keyPressed(p.key); };
         p.init();
     },
     
@@ -113,8 +113,10 @@ DiagnosticVis.Controller = {
     // Zoom and Seek
     keyPressed : function(key)
     {
+        dump("got esc");
         if (this.TRACK && key == this.p.ESC)
         {
+            
             if (this.TRACK_START != 0 || this.TRACK_END != this.TRACK.duration)
             {
                 this.TRACK_START = 0;
@@ -141,7 +143,7 @@ DiagnosticVis.Controller = {
             return;
         this.p.pushStyle();
         if (erase)
-            this.p.image(this.all, 0, 0);
+            // this.p.image(this.all, 0, 0);
         this.p.fill(255, 96);
         this.p.rectMode(this.p.CORNERS);
         this.p.rect(this.startX, 0, this.p.mouseX, this.p.height);
@@ -164,8 +166,8 @@ DiagnosticVis.Controller = {
         if (this.DRAGGED)
         {
             // console.log('Dragged from', startX, startY, ' to ', mouseX, mouseY);
-            var x1 = min(this.p.mouseX, this.startX);
-            var x2 = max(this.p.mouseX, this.startX);
+            var x1 = this.p.min(this.p.mouseX, this.startX);
+            var x2 = this.p.max(this.p.mouseX, this.startX);
             var new_start = this.offset_to_seconds(x1);
             var new_end   = this.offset_to_seconds(x2);
             if ( 1 < new_end - new_start)
@@ -174,8 +176,7 @@ DiagnosticVis.Controller = {
                 this.TRACK_END = new_end;
                 this.resized = true;
             }
-            else
-                this.p.image(this.all, 0, 0);
+            // else this.p.image(this.all, 0, 0);
         }
         this.DRAGGED = false;
         this.startX = null;
@@ -217,6 +218,7 @@ DiagnosticVis.Controller = {
         // TODO: Get current track
         if (this.TRACK != null)
         {
+            dump("resized:" + this.resized);
             var track_changed = (this.TRACK != this.current_track);
             if (track_changed)
             {
@@ -287,7 +289,7 @@ DiagnosticVis.Controller = {
         {
             this.old_scrub = x;
             
-            p.image(this.all, 0, 0);
+            // p.image(this.all, 0, 0);
             this.drawDragRect(false);
             
             p.fill(204, 102, 0, 95);
