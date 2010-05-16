@@ -212,6 +212,7 @@ window.mediaPage = {
           if (self.analysis)
           {
               // TODO: have position in ms, update processing?
+                
           }
           // else nothing to be done. Paint a picture of an hourglass?
       }

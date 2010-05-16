@@ -7115,8 +7115,7 @@
     ////////////////////////////////////////////////////////////////////////////
 
     p.init = function init(code) {
-      if (code) {
-        var parsedCode = Processing.parse(code, p);
+        //var parsedCode = Processing.parse(code, p);
 
         if (!p.use3DContext) {
           // Setup default 2d canvas context. 
@@ -7148,8 +7147,8 @@
         var executeSketch = function(processing) {
           with(processing) {
             // Don't start until all specified images in the cache are preloaded
-            if (!pjs.imageCache.pending) {
-              eval(parsedCode);
+            //if (!pjs.imageCache.pending) {
+             // eval(parsedCode);
 
               // Run void setup()
               if (setup) {
@@ -7166,20 +7165,20 @@
                   loop();
                 }
               }
-            } else {
-              window.setTimeout(executeSketch, 10, processing);
-            }
+            //} else {
+             // window.setTimeout(executeSketch, 10, processing);
+            //}
           }
         };
 
         // The parser adds custom methods to the processing context
         // this renames p to processing so these methods will run
         executeSketch(p);
-      }
 
       //////////////////////////////////////////////////////////////////////////
       // Event handling
       //////////////////////////////////////////////////////////////////////////
+      if (!p.pjs) { p.pjs = {} };
       p.pjs.eventHandlers = [];
       
       function attach(elem, type, fn) {
@@ -7221,7 +7220,7 @@
       });
 
       attach(curElement, "mouseout", function(e) {
-        document.body.style.cursor = oldCursor;
+        //document.body.style.cursor = oldCursor;
       });
 
       attach(curElement, "mousedown", function(e) {
