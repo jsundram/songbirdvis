@@ -161,7 +161,6 @@ DiagnosticVis.Controller = {
     
     mouseReleased : function()
     {
-        alert("done dragging" + this.DRAGGED);
         if (this.DRAGGED)
         {
             // console.log('Dragged from', startX, startY, ' to ', mouseX, mouseY);
