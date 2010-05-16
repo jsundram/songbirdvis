@@ -97,16 +97,21 @@ window.mediaPage = {
   
   callAPI: function(url, callback) 
   {
+      dump("api call: " + url + "\n");
       var req = Cc['@mozilla.org/xmlextras/xmlhttprequest;1'].createInstance(Ci.nsIXMLHttpRequest);
       req.open('GET',url,true);
       req.onreadystatechange = function(e) 
       {
           if (req.readyState == 4)
           {
-              if (req.status == 200)
+              if (req.status == 200) {
+                dump("response: " + req.responseText + "\n");
                 callback(req.responseText);
-              else
+              }
+              else {
                 Cu.reportError("api xmlhttprequest error");
+                dump("xmlhttprequest error\n");
+              }              
           }
       };
       req.send(null);
@@ -114,8 +119,8 @@ window.mediaPage = {
   
   getAnalysis: function(md5, artist, title)
   {
-      artist  = artist.replace(/ /g, '%20'); // URL ENCODE FTW
-      title = title.replace(/ /g, '%20'); // URL ENCODE FTW
+      artist = encodeURIComponent(artist);
+      title = encodeURIComponent(title);
       
       // Skip md5 for now; it takes time, and we can't do a proper lookup.
       
