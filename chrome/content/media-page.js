@@ -212,7 +212,8 @@ window.mediaPage = {
           if (self.analysis)
           {
               // TODO: have position in ms, update processing?
-                
+              var visController = DiagnosticVis.Controller;
+              visController.timestamp = position;
           }
           // else nothing to be done. Paint a picture of an hourglass?
       }

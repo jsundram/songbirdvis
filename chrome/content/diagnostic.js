@@ -56,6 +56,7 @@ DiagnosticVis.Controller = {
     TRACK_START : null,
     TRACK_END : null,
     track_changed : false, // TODO: not sure how to deal with this
+    timestamp : -1,
     
     curr_height : null,
     curr_width : null,
@@ -262,8 +263,7 @@ DiagnosticVis.Controller = {
     {
         p.pushStyle();
         
-        // TODO: Get timestamp somehow.
-        var timestamp = 0
+        var timestamp = this.timestamp;
         if (timestamp < this.TRACK_START || this.TRACK_END < timestamp)
         {
             r.draw(p, 0, 255); // blank us out
