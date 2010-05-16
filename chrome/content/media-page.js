@@ -213,8 +213,8 @@ window.mediaPage = {
           if (self.analysis && self.visController)
           {
               // TODO: have position in ms, update processing?
-              self.visController.timestamp = position;
-              dump("updated position with: " + position + "\n"); 
+              self.visController.timestamp = parseInt(position) / 1000;
+              dump("updated position with: " + self.visController.timestamp + "\n"); 
           }
           // else nothing to be done. Paint a picture of an hourglass?
       }

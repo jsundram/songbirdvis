@@ -21,6 +21,13 @@ Rect.prototype = {
     right: function()
     {
         return this.left + this.width;
+    },
+
+    draw: function(p, fill_color, fill_alpha)
+    {
+        p.pushStyle();
+        p.fill(fill_color, fill_alpha);
+        p.rect(this.left, this.top, this.width, this.height);//pjs function
+        p.popStyle();
     }
-    
 };

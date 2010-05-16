@@ -40,7 +40,7 @@ Cu.import("resource://app/jsmodules/sbProperties.jsm");
 
 if (typeof DiagnosticVis == 'undefined')
   var DiagnosticVis = {};
-
+/*
 Rect.prototype.draw = function(p, fill_color, fill_alpha)
 {
   p.pushStyle();
@@ -48,6 +48,7 @@ Rect.prototype.draw = function(p, fill_color, fill_alpha)
   p.rect(this.left, this.top, this.width, this.height);//pjs function
   p.popStyle();
 }
+*/
 
 
 DiagnosticVis.Controller = {
@@ -57,6 +58,7 @@ DiagnosticVis.Controller = {
     TRACK_END : null,
     track_changed : false, // TODO: not sure how to deal with this
     timestamp : -1,
+    current_track : null,
     
     curr_height : null,
     curr_width : null,
@@ -141,6 +143,7 @@ DiagnosticVis.Controller = {
         this.p.rect(this.startX, 0, this.p.mouseX, this.p.height);
         s = this.offset_to_seconds(this.startX);
         e = this.offset_to_seconds(this.p.mouseX);
+        this.p.textFont("Arial", 10);
         this.p.text(this.formatTime(s), this.startX + 8, 10);
         this.p.text(this.formatTime(e), this.p.mouseX + 8, 10);
         this.p.popStyle();
@@ -207,13 +210,12 @@ DiagnosticVis.Controller = {
         }
         
         // TODO: Get current track
-        var current_track = this.TRACK;
-        if (current_track)
+        if (this.TRACK != null)
         {
-            var track_changed = (this.TRACK != current_track);
+            var track_changed = (this.TRACK != this.current_track);
             if (track_changed)
             {
-                this.TRACK = current_track;
+                this.current_track = this.TRACK;
                 this.TRACK_START = 0;
                 this.TRACK_END = this.TRACK.duration;
             }
@@ -221,11 +223,12 @@ DiagnosticVis.Controller = {
             var scrubber_height = 10;
             var meta = new Rect(0, 0, p.width, scrubber_height);
             var scrubber = new Rect(0, meta.bottom(), p.width, scrubber_height);
+            dump("225\n");
             if (track_changed || this.resized)
             {
                 p.background(0);
                 
-                this.drawTrackLevel(p, this.TRACK, meta);
+                //this.drawTrackLevel(p, this.TRACK, meta);
                 
                 // *3 because of meta, scrubber, and space between timbre and pitch
                 var h = (p.height - scrubber_height * 3) / 4;
@@ -234,18 +237,19 @@ DiagnosticVis.Controller = {
                 this.drawTimbre(p, this.TRACK, timbre);
                 
                 var pitch = new Rect(0, timbre.bottom() + scrubber_height, p.width, h);
+                dump("240\n");
                 this.drawPitch(p, this.TRACK, pitch);
                 
                 var loudness = new Rect(0, pitch.bottom(), p.width, h);
                 this.drawLoudness(p, this.TRACK, loudness);
                 
                 var meter = new Rect(0, loudness.bottom(), p.width, h);
-                this.drawMeter(p, TRACK, meter);
+                this.drawMeter(p, this.TRACK, meter);
                 
                 this.all = p.get();
             }
             
-            this.drawScrubber(p, this.TRACK, scrubber);
+            //this.drawScrubber(p, this.TRACK, scrubber);
         }
         
         this.resized = false; // after we've made it through a draw loop, we've resized.
@@ -267,6 +271,9 @@ DiagnosticVis.Controller = {
         p.pushStyle();
         
         var timestamp = this.timestamp;
+        dump("timestamp: " + timestamp + "\n");
+        dump("start: " + this.TRACK_START + "\n");
+        dump("end: " + this.TRACK_END + "\n");
         if (timestamp < this.TRACK_START || this.TRACK_END < timestamp)
         {
             r.draw(p, 0, 255); // blank us out
@@ -280,7 +287,7 @@ DiagnosticVis.Controller = {
         {
             this.old_scrub = x;
             
-            p.image(this.all, 0, 0);
+            //p.image(this.all, 0, 0);
             this.drawDragRect(false);
             
             p.fill(204, 102, 0, 95);
@@ -306,7 +313,7 @@ DiagnosticVis.Controller = {
             var current = t.segments[i];
             if (current.start < this.TRACK_START || this.TRACK_END < current.end())
                 continue;
-            var w = r.width * current.duration / (TRACK_END - TRACK_START);
+            var w = r.width * current.duration / (this.TRACK_END - this.TRACK_START);
             
             var R = p.map(current.timbre[1], t.timbreMin[1], t.timbreMax[1], 0, 255);
             var G = p.map(current.timbre[2], t.timbreMin[2], t.timbreMax[2], 0, 255);
@@ -338,8 +345,9 @@ DiagnosticVis.Controller = {
                 continue;
             var w = r.width * current.duration / (this.TRACK_END - this.TRACK_START);
             
-            var pmin = min(current.pitches);
-            var pwidth = max(current.pitches) - pmin;
+            var pmin = p.min(current.pitches);
+            var pwidth = p.min(current.pitches) - pmin;
+            dump("pmin: " + pmin + ", pwidth: " + pwidth + "\n");
             if (pwidth < .001)
                 pwidth = .1; // avoid dividing by 0
             

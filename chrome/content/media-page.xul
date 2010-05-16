@@ -45,6 +45,7 @@
   <script type="text/javascript" src="processing-0.8.js"/>
   <script type="application/x-javascript" src="media-page.js" />
   <script type="application/x-javascript" src="diagnostic.js" />
+  <script type="application/x-javascript" src="Rect.js" />
   
   <vbox id="visualizer" flex="1">
     <vbox id="canvas-box" align="left" pack="center">
