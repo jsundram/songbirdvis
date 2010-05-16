@@ -42,7 +42,7 @@ window.mediaPage = {
   
   JSON: Cc['@mozilla.org/dom/json;1'].createInstance(Ci.nsIJSON),
   
-  handleSearchResponse:  function (response) {
+  handleSearchResponse: function(response) {
     // get a JS object 
     var responseObj = this.JSON.decode(response);
     var analysis_url = responseObj["response"]["songs"][0]["tracks"][0]["analysis_url"];
@@ -54,7 +54,8 @@ window.mediaPage = {
     {
         var track = self.JSON.decode(response);
         self.analysis = new TrackInfo(track);
-        self.setupProcessing(self.sketch.canvas);
+        // TODO: Call setupProcessing on sketch
+        //self.setupProcessing(self.sketch.canvas);
     });
     
   },
@@ -103,7 +104,7 @@ window.mediaPage = {
           if (req.readyState == 4)
           {
               if (req.status == 200)
-                  callback(req.responseText);
+                callback(req.responseText);
               else
                 Cu.reportError("api xmlhttprequest error");
           }
@@ -120,7 +121,7 @@ window.mediaPage = {
       
       var url = "http://beta.developer.echonest.com/api/v4/song/search?api_key=HSHR3EZROVIQJYY43&format=json" +
       "&results=1&artist=" + artist + "&title=" + title +
-      "&bucket=tracks&bucket=audio_summary&bucket=id:paulify&bucket=id:playme";
+      "&bucket=tracks&bucket=audio_summary&bucket=id:paulify";
       
       var self = this;
       this.callAPI(url, function(response) { self.handleSearchResponse(response);});
@@ -134,11 +135,11 @@ window.mediaPage = {
   onLoad: function(e)
   {
     // Make sure we have the javascript modules we're going to use
-    if (!window.SBProperties) 
+    if (!window.SBProperties)
       Cu.import("resource://app/jsmodules/sbProperties.jsm");
-    if (!window.LibraryUtils) 
+    if (!window.LibraryUtils)
       Cu.import("resource://app/jsmodules/sbLibraryUtils.jsm");
-    if (!window.kPlaylistCommands) 
+    if (!window.kPlaylistCommands)
       Cu.import("resource://app/jsmodules/kPlaylistCommands.jsm");
     
     if (!this._mediaListView) 
@@ -158,7 +159,7 @@ window.mediaPage = {
     var alertCount = 0;
     var self = this;
     var positionObserver = {
-      observe : function(subject, topic, position) 
+      observe : function(subject, topic, position)
       {
           if (self.analysis)
           {
@@ -194,15 +195,7 @@ window.mediaPage = {
     var cmds = mgr.request(kPlaylistCommands.MEDIAITEM_DEFAULT);
   },
   
-  setupProcessing: function(canvas){
-      var p = Processing(canvas, ""); // TODO: load sketch and pass it in here?
-      p.setup         = function() { self.setup(p); };
-      p.draw          = function() { self.draw(p); };
-      p.mousePressed  = function() { self.mousePressed(p); };
-      p.mouseReleased = function() { self.mouseReleased(p); };
-      p.mouseDragged  = function() { self.mouseDragged(p); };
-      p.init();
-  },
+
   
   // Called as the window is about to unload
   onUnload:  function(e) {},
