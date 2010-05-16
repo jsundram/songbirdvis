@@ -119,8 +119,8 @@ window.mediaPage = {
   
   getAnalysis: function(md5, artist, title)
   {
-      artist  = artist.replace(/ /g, '%20'); // URL ENCODE FTW
-      title = title.replace(/ /g, '%20'); // URL ENCODE FTW
+      artist = encodeURIComponent(artist);
+      title = encodeURIComponent(title);
       
       // Skip md5 for now; it takes time, and we can't do a proper lookup.
       
