@@ -63,8 +63,12 @@ DiagnosticVis.Controller = {
     timestamp : -1,
     current_track : null,
     
+    // set height, width. curr_height, curr_width for internal use only.
+    height : null,
+    width : null,
     curr_height : null,
     curr_width : null,
+    
     resized : false,
     all : null,
     old_scrub : null,
@@ -92,8 +96,8 @@ DiagnosticVis.Controller = {
     
     setup : function(sketchInfo)
     {
-        this.curr_width = parseInt(sketchInfo.width);
-        this.curr_height = parseInt(sketchInfo.height);
+        this.width = parseInt(sketchInfo.width);
+        this.height = parseInt(sketchInfo.height);
         this.TRACK = sketchInfo.analysis;
         this.p.size(this.curr_width, this.curr_height);
         this.p.background(BG);
@@ -197,28 +201,25 @@ DiagnosticVis.Controller = {
     
     draw : function(p)
     {
-        // TODO, get h, w
-        var h = this.curr_height;
-        var w = this.curr_width;
-        if (this.curr_height != h || this.curr_width != w)
+        if (this.curr_height != this.height || this.curr_width != this.width)
         {
-            this.curr_height = h;
-            this.curr_width = w;
+            this.curr_height = this.height;
+            this.curr_width = this.width;
             this.resized = true;
             try
             {
-                p.size(w, h);
+                p.size(this.width, this.height);
             }
             catch(e)
             {
                 p.background(BG); 
             }
+            dump("RESIZED\n");
         }
         
         // TODO: Get current track
         if (this.TRACK != null)
         {
-            dump("resized:" + this.resized);
             var track_changed = (this.TRACK != this.current_track);
             if (track_changed)
             {

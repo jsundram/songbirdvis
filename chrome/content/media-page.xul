@@ -12,7 +12,7 @@
      Required for the playlist and other widgets to function correctly. -->
 <?xul-overlay href="chrome://songbird/content/xul/mediaPageOverlay.xul"?>
 
-z
+
 <!--
   Visualizer.fm Media Page 
   
@@ -33,6 +33,7 @@ z
   onload="window.mediaPage.onLoad();"
   onunload="window.mediaPage.onUnload();"
   windowtype="Songbird:MediaPage"
+  onresize="window.mediaPage.onResize();"
 >
 
   <!-- Page Controller.

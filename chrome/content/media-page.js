@@ -238,6 +238,18 @@ window.mediaPage = {
         var cmds = mgr.request(kPlaylistCommands.MEDIAITEM_DEFAULT);
     },
     
+    onResize: function(e)
+    {
+        if (this.visController)
+        {
+            var mybox = document.getElementById("visualizerfm-media-page");
+            
+            this.visController.height = parseInt(mybox.boxObject.height);
+            this.visController.width = parseInt(mybox.boxObject.width);
+            dump("updating visController height: " + this.visController.height + " width: " + this.visController.width);
+        }
+    },
+    
     // Called as the window is about to unload.
     onUnload: function(e) { this.positionRemote.unbind(); },
     
