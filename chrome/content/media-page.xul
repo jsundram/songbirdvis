@@ -40,11 +40,14 @@
        Registers a window.mediaPage object implementing the 
        sbIMediaPage interface.
     -->
+  <!-- You must provide this file and define API_KEY=[YOUR ECHO NEST API KEY]-->
+  <script type="application/x-javascript" src="api_key.js" />
   <script type="application/x-javascript" src="analysis.js"/>
   <script type="text/javascript" src="processing-0.8.js"/>
   <script type="application/x-javascript" src="media-page.js" />
   <script type="application/x-javascript" src="diagnostic.js" />
   <script type="application/x-javascript" src="Rect.js" />
+  
   
   <vbox id="visualizer" flex="1">
     <vbox id="canvas-box" align="left" pack="center">

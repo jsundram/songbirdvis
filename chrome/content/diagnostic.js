@@ -90,7 +90,7 @@ DiagnosticVis.Controller = {
         p.mousePressed  = function() { self.mousePressed(p); };
         p.mouseReleased = function() { self.mouseReleased(p); };
         p.mouseDragged  = function() { self.mouseDragged(p); };
-        p.keyPressed = function()    { dump('hi');self.keyPressed(p.key); };
+        p.keyPressed = function()    { dump('keyPressed'); self.keyPressed(p.key); };
         p.init();
     },
     
@@ -212,12 +212,12 @@ DiagnosticVis.Controller = {
             }
             catch(e)
             {
-                p.background(BG); 
+                p.background(BG);
             }
             dump("RESIZED\n");
         }
         
-        // TODO: Get current track
+        // this.TRACK is set by media-page.js
         if (this.TRACK != null)
         {
             var track_changed = (this.TRACK != this.current_track);
@@ -257,9 +257,15 @@ DiagnosticVis.Controller = {
             
             this.drawScrubber(p, this.TRACK, scrubber);
         }
+        else
+        {
+            // TODO: Could put some text here to indicate we don't have analysis.
+            p.background(BG);
+        }
         
         this.resized = false; // after we've made it through a draw loop, we've resized.
     },
+    
     
     drawTrackLevel: function(p, t, r)
     {

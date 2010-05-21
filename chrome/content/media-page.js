@@ -1,4 +1,3 @@
-API_KEY = "5ZAOMB3BUR8QUN4PE"; // TODO: Insert your Echo Nest API Key here. 
 // Shorthand
 if (typeof(Cc) == "undefined")
     var Cc = Components.classes;
@@ -32,6 +31,8 @@ window.mediaPage = {
     
     sketch: null,
     
+    visController: null,
+    
     // Gets the sbIMediaListView that this page is displaying
     get mediaListView()  { return this._mediaListView; },
     
@@ -50,17 +51,52 @@ window.mediaPage = {
     
     JSON: Cc['@mozilla.org/dom/json;1'].createInstance(Ci.nsIJSON),
     
-    handleSearchResponse: function(response) 
+    saveText: function(filename, data)
+    {
+        filename = decodeURIComponent(filename);
+        dump('saving file: ' + filename + '\n');
+        try
+        {
+            var ios = Cc["@mozilla.org/network/io-service;1"].getService(Ci.nsIIOService);
+            var filehandler = ios.getProtocolHandler("file").QueryInterface(Ci.nsIFileProtocolHandler);
+            var file = filehandler.getFileFromURLSpec(filename);
+            if (!file.exists())
+            {
+                dump('creating file');
+                var fcStream = Cc["@mozilla.org/network/file-output-stream;1"].createInstance(Ci.nsIFileOutputStream);
+                fcStream.init(file, 0x02 | 0x08 | 0x20, 0666, 0); // write, create, truncate
+                fcStream.write(data, data.length);
+                fcStream.close();
+            }
+        }
+        catch(e)
+        {
+            dump(e);
+        }
+    },
+    
+    handleSearchResponse: function(response, contentURL)
     {
         // Get a JS object
+        dump('got a response: ' + response + '\n');
         var responseObj = this.JSON.decode(response);
-        var analysis_url = responseObj["response"]["songs"][0]["tracks"][0]["analysis_url"];
+        try
+        {
+            var analysis_url = responseObj["response"]["songs"][0]["tracks"][0]["analysis_url"];
+            dump('analysis url:' + analysis_url + '\n');
+        }
+        catch(e)
+        {
+            this.setupProcessing(null);
+            return;
+        }
         
         // Pull analysis from given url.
         var self = this;
         this.callAPI(analysis_url, function(response)
         {
             var track = self.JSON.decode(response);
+            self.saveText(contentURL + '.json', response);
             self.setupProcessing(track);
         });
     },
@@ -96,7 +132,7 @@ window.mediaPage = {
             {
                 if (req.status == 200) 
                 {
-                    dump("response: " + req.responseText + "\n");
+                    dump("call succeeded\n");
                     callback(req.responseText);
                 }
                 else 
@@ -116,9 +152,9 @@ window.mediaPage = {
         
         // Skip md5 for now; it takes time, and we can't do a proper lookup.
         var file = this.getLocalAnalysis(contentURL);
-        if (file) 
+        if (file)
         {
-            dump("analysis results exist locally\n");
+            dump("analysis results exist locally: " + file + "\n");
             // load the json
             var fiStream = Cc["@mozilla.org/network/file-input-stream;1"].createInstance(Ci.nsIFileInputStream);
             fiStream.init(file, 0x01, 0, 0);
@@ -126,7 +162,7 @@ window.mediaPage = {
             fiStreamScriptable.init(fiStream);
             var len = fiStreamScriptable.available();
             var filestring = fiStreamScriptable.read(len);
-            dump(filestring);
+            //dump(filestring);
             fiStreamScriptable.close();
             fiStream.close();
             
@@ -141,7 +177,7 @@ window.mediaPage = {
         "&bucket=tracks&bucket=audio_summary&bucket=id:paulify";
         
         var self = this;
-        this.callAPI(url, function(response) { self.handleSearchResponse(response);});
+        this.callAPI(url, function(response) { self.handleSearchResponse(response, contentURL);});
     },
     
     /**
@@ -150,22 +186,53 @@ window.mediaPage = {
     */
     getLocalAnalysis: function(contentURL) 
     {
-        dump("checking to see if " + contentURL + " json exists\n");
+        dump("checking to see if " + contentURL + ".json exists\n");
         var ios = Cc["@mozilla.org/network/io-service;1"].getService(Ci.nsIIOService);
         var filehandler = ios.getProtocolHandler("file").QueryInterface(Ci.nsIFileProtocolHandler);
         var file = filehandler.getFileFromURLSpec(contentURL + ".json");
-        return file;
+        if (file && file.exists())
+            return file
+        return null;
     },
     
     // Set up the Processing script.
     setupProcessing: function(track)
     {
-        this.analysis = new TrackInfo(track);
+        this.analysis = track == null ? null : new TrackInfo(track);
         this.sketch.analysis = this.analysis;
-        this.visController = DiagnosticVis.Controller;
-        this.visController.setupProcessing(this.sketch);
+        if (!this.visController)
+        {
+            this.visController = DiagnosticVis.Controller;
+            this.visController.setupProcessing(this.sketch);
+        }
+        else
+        {
+            this.visController.TRACK = this.analysis;
+        }
     },
-
+    
+    loadTrack: function(mediaItem)
+    {
+        // mediaItem is a sbiMediaItem.
+        if (!mediaItem)
+            dump("No track selected!");
+        
+        var spec = mediaItem.getProperty(SBProperties.contentURL);
+        dump('spec: ' + spec + '\n');
+        var ios = Cc["@mozilla.org/network/io-service;1"].getService(Ci.nsIIOService);
+        var filehandler = ios.getProtocolHandler("file").QueryInterface(Ci.nsIFileProtocolHandler);
+        var file = filehandler.getFileFromURLSpec(spec);
+        var md5 = this.get_md5(file);
+        dump('md5: ' + md5 + '\n');
+        
+        var artist = mediaItem.getProperty(SBProperties.artistName)
+        var track = mediaItem.getProperty(SBProperties.trackName)
+        dump('artist: ' + artist + '\n');
+        dump('track: ' + track + '\n');
+        
+        this.getAnalysis(md5, artist, track, spec);
+    },
+    
     /** 
     * Called when the page finishes loading.  
     * By this time window.mediaPage.mediaListView should have 
@@ -199,13 +266,13 @@ window.mediaPage = {
         var self = this;
         var positionObserver = 
         {
-            observe : function(subject, topic, position)
+            observe: function(subject, topic, position)
             {
                 if (self.analysis && self.visController)
                 {
                     // Have position in ms, update visualizer.
                     self.visController.timestamp = parseInt(position) / 1000;
-                    dump("updated position with: " + self.visController.timestamp + "\n"); 
+                    // dump("updated position with: " + self.visController.timestamp + "\n"); 
                 }
                 // else nothing to be done. Paint a picture of an hourglass?
             }
@@ -216,21 +283,37 @@ window.mediaPage = {
         positionRemote.bindObserver(positionObserver, true);
         this.positionRemote = positionRemote;
         
-        var selection = this._mediaListView.selection;
-        var seedTrack = selection.currentMediaItem; // sbiMediaItem
-        if (!seedTrack || selection.count == 0) 
-            alert("Please select one (and only one) track.");
+        // Listen for track changes.
+        var gMM = Cc["@songbirdnest.com/Songbird/Mediacore/Manager;1"].getService(Ci.sbIMediacoreManager);
+        var listener = {
+            onMediacoreEvent: function(e)
+            {
+                // Events are described here: http://src.songbirdnest.com/source/xref/client/components/mediacore/base/public/sbIMediacoreEvent.idl
+                if (e.type == Ci.sbIMediacoreEvent.TRACK_CHANGE)
+                {
+                    var mediaItem = e.data;
+                    dump("TRACK CHANGED!!\n");
+                    self.loadTrack(mediaItem);
+                }
+            }
+        }
+        gMM.addListener(listener);
+        this.playbackListener = listener; // save this away so we can removeListener later.
         
-        var spec = seedTrack.getProperty(SBProperties.contentURL);
-        var ios = Cc["@mozilla.org/network/io-service;1"].getService(Ci.nsIIOService);
-        var filehandler = ios.getProtocolHandler("file").QueryInterface(Ci.nsIFileProtocolHandler);
-        var file = filehandler.getFileFromURLSpec(spec);
-        var md5 = this.get_md5(file);
+        // Try to get the currently playing track. If nothing, get the currently selected track.
+        var currentTrack = null;
+        try
+        {
+            currentTrack = gMM.sequencer.currentItem;
+        }
+        catch(e)
+        {
+            currentTrack = null;
+        }
+        if (!currentTrack)
+            currentTrack = this._mediaListView.selection.currentMediaItem;
         
-        var artist = seedTrack.getProperty(SBProperties.artistName)
-        var track = seedTrack.getProperty(SBProperties.trackName)
-        
-        this.getAnalysis(md5, artist, track, spec);
+        this.loadTrack(currentTrack);
         
         // Get playlist commands (context menu, keyboard shortcuts, toolbar)
         // Note: playlist commands currently depend on the playlist widget.
@@ -251,7 +334,12 @@ window.mediaPage = {
     },
     
     // Called as the window is about to unload.
-    onUnload: function(e) { this.positionRemote.unbind(); },
+    onUnload: function(e) 
+    { 
+        this.positionRemote.unbind(); 
+        var gMM = Cc["@songbirdnest.com/Songbird/Mediacore/Manager;1"].getService(Ci.sbIMediacoreManager);
+        gMM.removeListener(this.playbackListener);
+    },
     
     // Show/highlight the MediaItem at the given MediaListView index. Called by the Find Current Track button.
     highlightItem: function(aIndex) {},

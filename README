@@ -1,2 +1,8 @@
 A musichack day project to make a visualizer for Songbird. Read more here:
 http://musichackdaysf2010.pbworks.com/SongbirdVis
+
+// TODO: 
+ * get p.image working in processing.js
+ * move to processing.js v0.9.1
+ * Get visualizer.fm button to always be showing, and have an icon?
+ * Change "Extension Loaded" text to Visualizer.fm or something like that.
