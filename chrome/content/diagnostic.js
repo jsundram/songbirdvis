@@ -142,8 +142,8 @@ DiagnosticVis.Controller = {
         if (!this.DRAGGED)
             return;
         this.p.pushStyle();
-        if (erase)
-            // this.p.image(this.all, 0, 0);
+        // if (erase) this.p.image(this.all, 0, 0);
+        
         this.p.fill(255, 96);
         this.p.rectMode(this.p.CORNERS);
         this.p.rect(this.startX, 0, this.p.mouseX, this.p.height);

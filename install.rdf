@@ -6,19 +6,10 @@
     <em:type>2</em:type>
     <em:name>Visualizer.fm</em:name>
     <em:version>1.0.0.0</em:version>
-    <em:creator>Jaso Sundram</em:creator>
-
-
+    <em:creator>Jason Sundram</em:creator>
+    
     <em:description>visualizer with echonest data</em:description>
-
-
-
-
-
     <em:optionsURL>chrome://visualizerfm/content/options.xul</em:optionsURL>
-
-
-
     <em:targetApplication>
       <Description>
         <em:id>songbird@songbirdnest.com</em:id>
@@ -26,13 +17,7 @@
         <em:maxVersion>1.4.*</em:maxVersion>
       </Description>
     </em:targetApplication>
-
-
-
-
-
-
-
+    
     <!-- Register a custom media page.
          See http://wiki.songbirdnest.com/Developer/Articles/Getting_Started/Building_Media_Views -->
     <songbird:mediaPage>
@@ -41,6 +26,6 @@
         <songbird:contentUrl>chrome://visualizerfm/content/media-page.xul</songbird:contentUrl>
       </Description>
     </songbird:mediaPage>
-
+    
   </Description>
 </RDF>

@@ -7,7 +7,8 @@
     <preferences>
       <preference id="boolpref1" name="extensions.visualizerfm.boolpref" type="bool"/>
       <preference id="intpref1" name="extensions.visualizerfm.intpref" type="int"/>
-      <preference id="stringpref1" name="extensions.visualizerfm.stringpref" type="string"/> <!-- note that this is only an ASCII string - use unichar for unicode strings -->
+      <!-- note that string is only an ASCII string - use unichar for unicode strings -->
+      <preference id="stringpref1" name="extensions.visualizerfm.stringpref" type="string"/> 
     </preferences>
     <checkbox id="checkboolpref" preference="boolpref1" label="&checkboolpref.label;" accesskey="&checkboolpref.accesskey;"/>
     <label accesskey="&intpref.accesskey;" control="textintpref">&intpref.label;</label><textbox id="textintpref" preference="intpref1"/>

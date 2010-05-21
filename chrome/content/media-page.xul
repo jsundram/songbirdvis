@@ -12,14 +12,13 @@
      Required for the playlist and other widgets to function correctly. -->
 <?xul-overlay href="chrome://songbird/content/xul/mediaPageOverlay.xul"?>
 
-
+z
 <!--
- 
   Visualizer.fm Media Page 
   
   A custom viewer for sbIMediaListViews.  Shows a media list as a plain 
   table using the sb-playlist XBL widget.
-
+  
   This page is registered with sbIMediaPageManager and loaded by the
   sbTabBrowser widget.
   
@@ -36,7 +35,6 @@
   windowtype="Songbird:MediaPage"
 >
 
- 
   <!-- Page Controller.
        Registers a window.mediaPage object implementing the 
        sbIMediaPage interface.
@@ -52,6 +50,5 @@
       <html:div><html:canvas id="visualizer_canvas"/></html:div>
     </vbox>
   </vbox>
-  
 
 </page>

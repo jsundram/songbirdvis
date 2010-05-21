@@ -4,10 +4,6 @@ skin    visualizerfm  classic/1.0 chrome/skin/
 
 
 overlay chrome://songbird/content/xul/layoutWithBrowserOverlay.xul chrome://visualizerfm/content/scripts-overlay.xul
-
 overlay chrome://songbird/content/xul/layoutWithBrowserOverlay.xul chrome://visualizerfm/content/menu-overlay.xul
-
-
-
 overlay chrome://songbird/content/xul/layoutWithBrowserOverlay.xul chrome://visualizerfm/content/commands-overlay.xul
 
