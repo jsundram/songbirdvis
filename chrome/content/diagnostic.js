@@ -117,7 +117,7 @@ DiagnosticVis.Controller = {
     // Zoom and Seek
     keyPressed : function(key)
     {
-        dump("got esc");
+        dump("got esc\n");
         if (this.TRACK && key == this.p.ESC)
         {
             
@@ -138,7 +138,7 @@ DiagnosticVis.Controller = {
     
     offset_to_seconds : function(x_offset)
     {
-        return this.TRACK_START + (x_offset / this.p.width) * (this.TRACK_END - this.TRACK_START);
+        return this.p.map(x_offset, 0, this.p.width, this.TRACK_START, this.TRACK_END);
     },
     
     drawDragRect : function(erase)
@@ -289,9 +289,7 @@ DiagnosticVis.Controller = {
             return;
         }
         
-        var frac = (timestamp - this.TRACK_START) / (this.TRACK_END - this.TRACK_START);
-        
-        var x = r.left + frac * r.width;
+        var x = this.p.map(timestamp, this.TRACK_START, this.TRACK_END, r.left, r.right());
         if (x != this.old_scrub)
         {
             this.old_scrub = x;
@@ -423,18 +421,13 @@ DiagnosticVis.Controller = {
         {
             var m = t.sections[i];
             
-            if (m.start < this.TRACK_START || this.TRACK_END < m.end())
+            if (m.start < this.TRACK_START || this.TRACK_END < m.start)
                 continue;
             
-            var s = m.start;
-            var d = m.duration / 4; // Perhaps you are wondering about the /4. Me too.
-            var c = m.confidence
+            var pt_x = p.map(m.start, this.TRACK_START, this.TRACK_END, r.left, r.right());
+            var thickness = p.map(m.confidence, 0, 1, 2, 8); 
             
-            var pt_x = p.map(s, 0, t.duration, r.left, r.right());
-            var pt_y = p.map(d, 0, 1, r.bottom(), r.top); // Just a guess, should fix
-            var pt_c = p.map(c, 0, 1, 2, 8); 
-            
-            p.rect(pt_x - pt_c / 2, r.top, pt_c, r.height);
+            p.rect(pt_x - thickness / 2, r.top, thickness, r.height);
         }
         
         p.popStyle();
@@ -487,13 +480,14 @@ DiagnosticVis.Controller = {
         }
         p.endShape(p.CLOSE);
         
-        p.stroke(255);
+        // draw overall loudness.
+        p.stroke(FG);
         var loud = p.map(t.overall_loudness, min_loudness, max_loudness, r.bottom(), r.top);
-        var fin = r.left + 10;
+        var fin = r.left;
         if (this.TRACK_START < t.end_of_fade_in && t.end_of_fade_in < this.TRACK_END)
             fin = p.map(t.end_of_fade_in, this.TRACK_START, this.TRACK_END, r.left, r.right());
         
-        var fout = r.right() - 10;
+        var fout = r.right();
         if (this.TRACK_START < t.start_of_fade_out && t.start_of_fade_out < this.TRACK_END)
             fout = p.map(t.start_of_fade_out, this.TRACK_START, this.TRACK_END, r.left, r.right());
         
